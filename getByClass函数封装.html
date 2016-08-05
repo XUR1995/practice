@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+
+
+
+	.aa{background: red;}
+	</style>
+</head>
+<body>
+	<ul id="menu">
+		<li class="aa"></li>
+		<li class="aa bb"></li>
+		<li class=""></li>
+		<li class="aa"></li>
+	</ul>
+
+	<script>
+		var oMenu = document.getElementById('menu');
+		getByClass('aa',oMenu,'li');
+		function getByClass(clsName,context,tag){
+			var result= [];
+			context = context || document;
+			tag = tag || '*';
+			var arr = context.getElementsByTagName(tag);
+			for (var i = 0; i < arr.length; i++) {
+				var re = new RegExp("\\b" + clsName +"\\b" ,"g");
+				if ( re.test(arr[i].className) ) {
+					result.push(arr[i]);
+				}
+			}
+			return result;
+		}
+
+		var rg = /text/;
+		var str = 'xxxtextntextg';
+		document.write(rg.exec(str));
+
+	</script>
+</body>
+</html>
