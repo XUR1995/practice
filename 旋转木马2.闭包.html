@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		#stage{
+			width: 1000px;
+			height: 400px;
+			background: #ccc;
+			border-radius: 10px;
+			box-shadow: 0 0  2px 5px rgba(0,0,0,0.4);
+			margin: 50px auto;
+			-webkit-perspective:800px;
+			-moz-perspective:800px;
+			-ms-perspective:800px;
+			-o-perspective:800px;
+			perspective:800px;
+
+			-webkit-perspective-origin:50% -10%;
+			-moz-perspective-origin:50% -10%;
+			-ms-perspective-origin:50% -10%;
+			-o-perspective-origin:50% -10%;
+			perspective-origin:50% -10%;
+		}
+		#container{
+			height: 100px;
+			width: 128px;
+			position: absolute;
+			left: 50%;
+			top:80px;
+			margin-left: -64px;
+			-webkit-transform-style:preserve-3d;
+			-moz-transform-style:preserve-3d;
+			-ms-transform-style:preserve-3d;
+			-o-transform-style:preserve-3d;
+			transform-style:preserve-3d;
+
+			-webkit-transition: transform 1s ease;
+			-moz-transition: transform 1s ease;
+			-ms-transition: transform 1s ease;
+			-o-transition: transform 1s ease;
+			transition: transform 1s ease;			
+			
+		}
+		#container img{
+			position: absolute;
+			-webkit-transition: transform 1s ease ;
+			-moz-transition: transform 1s ease ;
+			-ms-transition: transform 1s ease ;
+			-o-transition: transform 1s ease ;
+			transition: transform 1s ease ;
+
+		}
+
+	</style>
+</head>
+<body>
+
+	<div id="stage">
+		<div id="container">
+		</div>
+	</div>
+	<script>
+			(function(){
+				var oContainer = document.getElementById('container');
+				var html = '';
+				for (var i = 0; i < 9; i++) {
+					html+='<img src="img/mm'+(i+1)+'.jpg"  />';
+				}
+				oContainer.innerHTML = html;
+				var aImg = oContainer.getElementsByTagName('img');
+				for (var i = 0; i < aImg.length; i++){	
+					(function(index){//闭包
+						setTimeout(function(){
+							aImg[index].style.WebkitTransform = 'rotateY('+ index*40 + 'deg) translateZ(190px)';
+						},100*(9-index));
+					})(i);				
+				}
+				var index=0;
+				oContainer.onclick=function(){
+					index++;
+					this.style.WebkitTransform = 'rotateY('+(-index*40)+'deg)';
+				};
+			})()					
+	</script>
+</body>
+</html>

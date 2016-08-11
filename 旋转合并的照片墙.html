@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>旋转合并的照片墙</title>
+	<style>
+		body{
+			background: url(img/3Dimg/bg.jpg);
+		}
+		#container{
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		#container .img{
+			position: absolute;
+			cursor: pointer;
+			border: 6px solid #fff;
+			box-shadow: 2px 2px 2px rgba(0,0,0,0.7 );
+			-webkit-transition: all 1.5s ease-in-out;
+		}
+		#container .img.piece{
+			border: 1px solid #fff;
+			box-shadow:0px 0px 2px black;
+		}
+		#container .img span{
+			position: absolute;
+			left: 0;
+			top:0;
+			width: 100%;
+			height: 100%;
+			opacity: 0; 
+			/*background: #f0f;*/
+			/*-webkit-transition: all 1.5s ease-in-out;*/
+
+		}
+
+		#prev, #next {
+		    position: absolute;
+		    width: 60px;
+		    height: 60px;
+		    top: 50%;
+		    margin-top: -30px;
+		    border: 1px solid #999;
+		    box-shadow: 0 0 1px rgba(0, 0, 0, 0.7);
+		    z-index: 2;
+		    -webkit-transition: 1s all ease-in-out;
+		    opacity: 0.6;
+		 /*   -moz-transition: 0.7s all ease;
+		    opacity: 0.6;
+		    -ms-transition: 0.7s all ease;
+		    opacity: 0.6;
+		    -o-transition: 0.7s all ease;
+		    opacity: 0.6;*/
+		}
+
+		#prev {
+		    left: -20px;
+		    background: url(img/3Dimg/prev.png) center no-repeat white;
+		    border-radius: 0 8px 8px 0;
+		    display: none;
+		}
+
+		#prev:hover {
+		    left: 0;
+		    opacity: 1;
+		}
+
+		#next {
+		    right: -20px;
+		    background: url(img/3Dimg/next.png) center no-repeat white;
+		    border-radius: 8px 0 0 8px;
+		    display: none;
+		}
+
+		#next:hover {
+		    right: 0;
+		    opacity: 1;
+		}
+/*
+		.back {
+		    position: absolute;
+		    right: 20px;
+		    top: 10px;
+		    color: #000;
+		    text-shadow: 1px 1px 3px #999999;
+		    text-decoration: none;
+		    z-index: 99999;
+		}*/
+
+	</style>
+</head>
+<body>
+	<div id="container"></div>
+	<a href="javascript:;" id="prev"></a>
+	<a href="javascript:;" id="next"></a>
+
+	<script>
+	(function(){
+		var oContainer = document.getElementById('container'),
+			 oPreve = document.getElementById('prev'),
+			 oNext = document.getElementById('next'),
+			 row = 4,//行
+			 col = 6,//列
+			 num = row*col,//图片数
+			 B_I_Width = 750,//大图宽
+			 B_I_Height = 500,//大图宽
+			 Thumb_I_Width = Thumb_I_Height = 125;//缩略图宽高
+		var iLoad=0;
+		var iNow = 0;//用来标示大图的索引
+		var bClicked = false;//用来标示是否点击了图片格
+		// var aImg = new Image();aImg.src = 'img/3Dimg/i.jpg';//文件加载但不显示
+
+
+//大小图片预加载
+		var iLoad = 0;
+		for (var i = 1; i <= num ; i++) {
+			var oBigImg = new Image();
+			oBigImg.src = 'img/3Dimg/' + i + '.jpg';
+			oBigImg.onload = function(){
+
+				if (++iLoad==num*2) {
+					loadSuccess();
+				}
+			};
+			var oThumbImg = new Image();
+			oThumbImg.src = 'img/3Dimg/thumbs/' + i + '.jpg';
+			oThumbImg.onload = function(){
+
+				if (++iLoad==num*2) {
+					loadSuccess();
+				}
+			};
+		}
+
+
+//加载完成插入
+		function loadSuccess(){
+			var index = 0;//标示图片格子的索引
+			var iColGap = (oContainer.offsetWidth - col*Thumb_I_Width)/(col+1);
+			var iRowGap = (oContainer.offsetHeight - row*Thumb_I_Height)/(row+1);
+			for (var i = 0; i <row; i++) {
+				for (var j = 0; j <col; j++) {
+					var oDiv = document.createElement('div');
+					oDiv.pos = {
+						left:parseInt(iColGap + j*(iColGap+Thumb_I_Width)),
+						top:parseInt(iRowGap + i*(iRowGap+Thumb_I_Height))
+					}
+					oDiv.index = index;
+					oDiv.martix = {//一个矩阵对象用来记录格子的行列号
+						col:j,
+						row:i
+					};
+					oDiv.style.left = -Math.random()*300 - 200 + 'px';
+					oDiv.style.top = -Math.random()*300 - 200 + 'px';//用来随机设置初始值
+
+					oDiv.className = 'img';
+					oDiv.style.width = Thumb_I_Width +'px';
+					oDiv.style.height = Thumb_I_Height +'px';
+					oDiv.style.background = 'url(img/3Dimg/thumbs/' +(index+1)+'.jpg)';
+					
+					oDiv.innerHTML = '<span></span>';
+					oContainer.appendChild(oDiv);
+					index++;
+				}
+			}
+
+			var aImg = document.getElementsByClassName('img');
+			index--;//上面循环结束后，值为24，应先-1
+			var timer = setInterval(function(){
+				aImg[index].style.left = aImg[index].pos.left+'px';
+				aImg[index].style.top  = aImg[index].pos.top+'px';
+
+				setRotate(aImg[index],'Transform','rotate('+(Math.random()*40-20)+'deg)');
+
+				aImg[index].addEventListener('click',clickHandler,false);
+
+				index--;
+				if (index==-1) {
+					clearInterval(timer);
+				} 
+			},100);
+
+		
+
+		// oContainer.addEventListener('click',function(e){
+		// 	if (e.target.className == 'img' || e.target.tagName == 'SPAN') {//tagName的值要大写
+		// 		alert(111);
+		// 	}
+		
+		function clickHandler(){//解决创建多余内存的问题
+			
+			if (bClicked) {//标示点击过已合并，要分散了
+				for (var i = 0; i < aImg.length; i++) {
+					var oSpan = aImg[i].getElementsByTagName('span')[0];
+
+					aImg[i].style.left = aImg[i].pos.left+'px';
+					aImg[i].style.top  = aImg[i].pos.top +'px';
+					setRotate(aImg[i],'Transform','rotate('+(Math.random()*40-20)+'deg)');
+					oSpan.style.opacity = 0;
+					aImg[i].className = 'img';
+
+				}
+				oPreve.style.display = oNext.style.display='none';
+			}else{
+				var bigImgPos = {//合并后大图的坐标
+					left:(oContainer.offsetWidth - B_I_Width)/2,
+					top:(oContainer.offsetHeight - B_I_Height)/2
+				};
+				for (var i = 0; i < aImg.length; i++) {
+					var oSpan = aImg[i].getElementsByTagName('span')[0];
+					oSpan.style.background = 'url(img/3Dimg/'+( this.index + 1 )+'.jpg)  '+ (-aImg[i].martix.col*Thumb_I_Width)+'px  '+(-aImg[i].martix.row*Thumb_I_Height)+'px';
+					oSpan.style.opacity = 1;
+					aImg[i].style.left = bigImgPos.left+aImg[i].martix.col*(Thumb_I_Width+1)+'px';
+					aImg[i].style.top = bigImgPos.top+aImg[i].martix.row*(Thumb_I_Height+1)+'px';
+					setRotate(aImg[i],'Transform','rotate(0deg)');
+					aImg[i].className = 'img  piece';
+
+				}
+				oPreve.style.display = oNext.style.display='block';
+				
+
+			}
+			bClicked = !bClicked;
+		}
+
+			
+
+		oPreve.onclick = oNext.onclick = function(){
+			if (this == oPreve) {
+				iNow--;
+				if (iNow==-1) {
+					iNow=num-1;
+				}
+			}else{
+				iNow++;
+				if (iNow==num) {
+					iNow=0;
+				}
+			}
+			var arr =[];//arr为从0到23,24个元素
+			for (var i = 0; i < num; i++) {
+				arr.push(i);
+			}
+			arr.sort(function(){
+				return Math.random() - 0.5;//数组乱序
+			});
+			var timer = setInterval(function(){
+				var item = arr.pop();//数组少一个元素
+				aImg[item].getElementsByTagName('span')[0].style.background = 'url(img/3Dimg/'+(iNow+1)+'.jpg)'  + (-aImg[item].martix.col*Thumb_I_Width)+'px  '+(-aImg[item].martix.row*Thumb_I_Height)+'px';
+				if (arr.length==0) {//知道数组为0，即
+					clearInterval(timer);
+				}
+			},30);
+
+
+
+
+
+		};
+	}
+
+
+
+
+
+
+
+
+
+
+
+//改变角度的函数
+		function setRotate(elem,attr,value){
+			['Webkit','Moz','Ms','O',''].forEach(function(prefix){
+				elem.style[prefix+attr]= value;
+			});
+		}
+	
+
+		
+
+
+
+				
+			
+
+
+
+			
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	})()
+
+
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="UTF-8">
+	<style type="text/css">
+	*{
+		margin:0;
+		padding: 0;
+	}
+	ul,ol{
+		list-style: none;
+	}
+	a{
+		text-decoration: none;
+	}
+	img{
+		border: 0;
+
+	}
+
+	#container{
+		width: 400px;
+		height: 430px;
+		margin: 100px auto;
+		background: #ccc;
+		overflow: hidden;
+		position: relative;
+	}
+	.mask{
+		width: 200px;
+		height: 320px;
+		background: #f00;/*IE8中，元素无背景，cursor无效*/
+		opacity: 0;
+		filter: alpha(opacity=0);
+		cursor: pointer;
+		position: absolute;
+		top: 0;
+		z-index: 9999999;
+	}
+	#left-mask{
+		left:0;
+	}
+	#right-mask{
+		right:0;
+	}
+	.btn{
+		width: 60px;
+		height: 60px;
+		position: absolute;
+		top: 130px;
+		background: url(img/btn.gif);
+		z-index: 1000000000000;
+		opacity: 0;
+		filter: alpha(opacity=0);
+	}
+	#prev-btn{left: 10px;background-position: 0 0;}
+	#next-btn{right: 10px;background-position: 0 -60px;}
+	#big-img{
+		height: 320px;
+		position: relative;
+	}
+	#big-img li{
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 400px;
+		height: 320px;
+		overflow: hidden;
+	}
+	#big-img img{
+	/*	width: 100%;
+		height: 100%;*/
+	}
+	#info{
+		width: 100%;
+		height: 25px;
+		line-height: 25px;
+		position: absolute;
+		top: 295px;
+		background: #000;
+		opacity: 0.6;
+		filter: alpha(opacity=60);
+		z-index: 999999;
+	}
+	#title{
+		float: left;
+		color: #fff;
+		margin-left: 10px;
+	}
+	#page{
+		float: right;
+		color: #fff;
+		margin-right: 10px;
+	}
+	#thumb-box{
+		height: 110px;
+		background: #ccc;
+		position: relative;
+		padding-left: 10px;
+	}
+	#thumb-img{
+		position: absolute;
+		left: 10px;
+		top: 8px;
+		width: 5000px;
+	}
+	#thumb-img li{
+		width: 120px;
+		height: 94px;
+		float: left;
+		padding-right: 10px;
+		opacity: 0.5;
+		filter: alpha(opacity=50);
+		cursor: pointer;
+	}
+/*	#thumb-img li.selected{
+		opacity: 1;
+		filter: alpha(opacity=100);	
+	}*/
+	#thumb-img img{
+		width: 100%;
+		height: 100%;
+	}
+	</style>
+</head>
+<body>
+<div id="container">
+	<div id="left-mask" class="mask"></div>
+	<div id="right-mask" class="mask"></div>
+	<a id="prev-btn" class="btn"></a>
+	
+	
+	<a id="next-btn" class="btn"></a>
+	<ul id="big-img">
+		<li style="z-index:6"><img src="img/F(1).jpg" alt="" title="001"></li>
+		<li style="z-index:5"><img src="img/F(2).jpg" alt="" title="002"></li>
+		<li style="z-index:4"><img src="img/F(3).jpg" alt="" title="003"></li>
+		<li style="z-index:3"><img src="img/F(4).jpg" alt="" title="004"></li>
+		<li style="z-index:2"><img src="img/F(5).jpg" alt="" title="005"></li>
+		<li style="z-index:1"><img src="img/F(6).jpg" alt="" title="006"></li>
+	</ul>
+	
+	<div id="info">
+		<span id="title">haahahha</span>
+		<div id="page">
+			<span id="curr-page">1</span>
+			<span id="total-page">/ 6</span>
+		</div>
+	</div> 
+
+	<div id="thumb-box">
+		<ul id="thumb-img">
+			<li style="opacity: 1 ;filter:alpha(opacity =100)"><img src="img/F(1).jpg"></li>
+			<li><img src="img/F(2).jpg"></li>
+			<li><img src="img/F(3).jpg"></li>
+			<li><img src="img/F(4).jpg"></li>
+			<li><img src="img/F(5).jpg"></li>
+			<li><img src="img/F(6).jpg"></li>
+		</ul>
+	</div>
+</div>
+<script src="js.js"></script>
+<script type="text/javascript">
+(function(){//(function(name){})('lisi')函数立即调用，且只调用一次,在函数中声明变量避免污染全局	
+	var oBIgImg = document.getElementById('big-img');
+	var aBigImgs = oBIgImg.children;
+	var oLeftMask = document.getElementById('left-mask');
+	var oRightMask = document.getElementById('right-mask');
+	var oPrevBtn = document.getElementById('prev-btn');
+	var oNextBtn = document.getElementById('next-btn');
+	var index=0;
+	var zIndex = 6;
+	var oTitle = document.getElementById('title');
+	var oCurrPage = document.getElementById('curr-page');
+	var oThumbImg = document.getElementById('thumb-img');
+	var aThumbImgs = oThumbImg.children;
+
+	oTitle.innerHTML = aBigImgs[0].children[0].title;
+
+	oLeftMask.onmouseover = oRightMask.onmouseover = oPrevBtn.onmouseover = oNextBtn.onmouseover = function(){
+		if(this == oLeftMask ||this == oPrevBtn){
+			animate(oPrevBtn,{opacity:100});
+		}else{
+			animate(oNextBtn,{opacity:100});
+		}
+	};
+	oLeftMask.onmouseout = oRightMask.onmouseout = oPrevBtn.onmouseout = oNextBtn.onmouseout = function(){
+		if(this == oLeftMask||this == oPrevBtn){
+			animate(oPrevBtn,{opacity:0});
+		}else{
+			animate(oNextBtn,{opacity:0});
+		}
+	};
+
+	function changeImg(index){
+		var oNextImg = aBigImgs[index];
+		oNextImg.style.height = 0;
+		oNextImg.style.zIndex = ++zIndex;
+		oTitle.innerHTML = oNextImg.children[0].title;
+		oCurrPage.innerHTML = index+1;
+		animate(oNextImg,{height:320});
+
+		var iLeft = 0;
+		if (index ==0) {iLeft=-10}
+		else if (index==aThumbImgs.length-1) {iLeft=(index-2)*aThumbImgs[0].offsetWidth-10}
+		else{iLeft=(index-1)*aThumbImgs[0].offsetWidth-10}
+		animate(oThumbImg,{left:-iLeft});
+				
+		for (var i = 0; i < aThumbImgs.length; i++) {
+			aThumbImgs[i].style.opacity=0.5;
+			aThumbImgs[i].style.filter='alpha( opacity=50)';
+		}
+		//this.className ='selected';由于内联优先级高于class出错
+		aThumbImgs[index].style.opacity=1;
+		aThumbImgs[index].style.filter='alpha(opacity=100)';
+	}
+
+	oNextBtn.onclick = function(){		
+		index++;//当前索引加1，为下一要显示的图片索引
+		if(index == aBigImgs.length ){
+			index=0;
+		}	
+		changeImg(index);
+	};
+	oPrevBtn.onclick = function(){		
+		index--;//当前索引减1，为下一个要显示的图片索引
+		if(index == -1 ){
+			index=aBigImgs.length-1;
+		}
+		changeImg(index);
+	};
+
+	for (var i = 0; i < aThumbImgs.length; i++) {
+		aThumbImgs[i].index = i;
+		aThumbImgs[i].onmouseover = function(){
+			animate(this,{opacity:100});
+		};
+		aThumbImgs[i].onmouseout = function(){
+			if(index!=this.index){
+					animate(this,{opacity:50});
+			}		
+		};
+		aThumbImgs[i].onclick = function(){
+			if(this.index==index){}else{
+			index = this.index;
+			changeImg(index);}
+		};
+	}	
+
+
+})();
+</script>
+
+
+</body>
+</html>
